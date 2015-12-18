@@ -6,7 +6,7 @@
 // For more information, the home page:
 // http://pieroxy.net/blog/pages/lz-string/testing.html
 //
-// LZ-based compression algorithm, version 1.4.4
+// LZ-based compression algorithm, version 1.4.4 with uint16Array support
 var LZString = (function() {
 
 // private property
