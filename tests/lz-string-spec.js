@@ -1,4 +1,8 @@
-var compressionTests = function(compress, decompress, uint8array_mode) {
+var regular = 0,
+    uint8 = 1,
+    uint16 = 2;
+
+var compressionTests = function(compress, decompress, mode) {
     it('compresses and decompresses  "Hello world!"', function() {
         var compressed = compress('Hello world!');
         expect(compressed).not.toBe('Hello world!');
@@ -8,12 +12,22 @@ var compressionTests = function(compress, decompress, uint8array_mode) {
 
     it('compresses and decompresses null', function() {
         var compressed = compress(null);
-        if (uint8array_mode===false){
+        switch(mode) {
+        case regular:
             expect(compressed).toBe('');
             expect(typeof compressed).toBe(typeof '');
-        } else {    //uint8array
+            break;
+
+        case uint8:
             expect(compressed instanceof Uint8Array).toBe(true);
             expect(compressed.length).toBe(0);  //empty array
+            break;
+
+        case uint16:
+            expect(compressed instanceof Uint16Array).toBe(true);
+            expect(compressed.length).toBe(0);  //empty array
+            break;
+
         }
         var decompressed = decompress(compressed);
         expect(decompressed).toBe(null);
@@ -21,12 +35,22 @@ var compressionTests = function(compress, decompress, uint8array_mode) {
 
     it('compresses and decompresses undefined', function() {
         var compressed = compress();
-        if (uint8array_mode===false){
+        switch(mode) {
+        case regular:
             expect(compressed).toBe('');
             expect(typeof compressed).toBe(typeof '');
-        } else {    //uint8array
+            break;
+
+        case uint8:
             expect(compressed instanceof Uint8Array).toBe(true);
             expect(compressed.length).toBe(0);  //empty array
+            break;
+
+        case uint16:
+            expect(compressed instanceof Uint16Array).toBe(true);
+            expect(compressed.length).toBe(0);  //empty array
+            break;
+
         }
         var decompressed = decompress(compressed);
         expect(decompressed).toBe(null);
@@ -39,12 +63,22 @@ var compressionTests = function(compress, decompress, uint8array_mode) {
 
     it('compresses and decompresses an empty string', function() {
         var compressed = compress('');
-        if (uint8array_mode===false){
+        switch(mode) {
+        case regular:
             expect(compressed).not.toBe('');
             expect(typeof compressed).toBe(typeof '');
-        } else {    //uint8array
+            break;
+            
+        case uint8:
             expect(compressed instanceof Uint8Array).toBe(true);
             expect(compressed.length).not.toBe(0);  //not an empty array when compress
+            break;
+            
+        case uint16:
+            expect(compressed instanceof Uint16Array).toBe(true);
+            expect(compressed.length).not.toBe(0);  //empty array
+            break;
+            
         }
         var decompressed = decompress(compressed);
         expect(decompressed).toBe('');
@@ -98,31 +132,37 @@ describe('LZString', function() {
     describe('base 64', function() {
         compressionTests(LZString.compressToBase64
                          ,LZString.decompressFromBase64
-                         ,false //uint8array_mode: false
+                         ,regular
                          );
     });
     describe('UTF-16', function() {
         compressionTests(LZString.compressToUTF16
                          ,LZString.decompressFromUTF16
-                         ,false //uint8array_mode: false
+                         ,regular
                          );
     });
     describe('URI Encoded', function() {
         compressionTests(LZString.compressToEncodedURIComponent
                          ,LZString.decompressFromEncodedURIComponent
-                         ,false //uint8array_mode: false
+                         ,regular
                          );
     });
     describe('uint8array', function() {
         compressionTests(LZString.compressToUint8Array
                          ,LZString.decompressFromUint8Array
-                         ,true  //uint8array_mode: true
+                         ,uint8
+                         );
+    });
+    describe('uint16array', function() {
+        compressionTests(LZString.compressToUint16Array
+                         ,LZString.decompressFromUint16Array
+                         ,uint16
                          );
     });
     describe('raw', function() {
         compressionTests(LZString.compress
                          ,LZString.decompress
-                         ,false  //uint8array_mode: false
+                         ,regular
                          );
     });
 });

@@ -88,6 +88,23 @@ var LZString = {
 
   },
 
+  //compress into uint16array, endianess platform dependent
+  compressToUint16Array: function (uncompressed) {
+    var compressed = LZString.compress(uncompressed);
+    var buf=new Uint16Array(compressed.length);
+    for (var i=0, TotalLen=compressed.length; i<TotalLen; i++) {
+      buf[i] = compressed.charCodeAt(i);
+    }
+    return buf;
+  },
+
+  //decompress from uint16array, endianess platform dependent
+  decompressFromUint16Array:function (compressed) {
+    if(compressed instanceof Uint16Array) {
+      compressed = compressed.reduce(function(r,c){return r+=String.fromCharCode(c);},'');
+    }
+    return LZString.decompress(compressed);
+  },
 
   //compress into a string that is already URI encoded
   compressToEncodedURIComponent: function (input) {
